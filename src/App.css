@@ -14,6 +14,10 @@
 .ble-hbox {
   display: flex;
 }
+.ble-middle {
+  justify-content: center;
+  margin-top: 20px;
+}
 
 .space-md {
   margin: 5px;

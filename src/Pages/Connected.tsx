@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useCallback, useEffect } from 'react';
 import { Spinner, Card, Button } from 'react-bootstrap';
 import { ON, OFF, STATIC_COLOR } from "../buffer.json";
 import AppContext from '../app.context';
@@ -10,8 +10,12 @@ const toBuffer = (bytes: string[]) => new Uint8Array(bytes.map(byte => Number(by
 const Connected = () => {
     const { 
         uuid,
-        services, 
+        services,
+        request,
+        device, 
         writableCharacteristic,
+        setConnected,
+        setWritableCharacteristic,
     } = useContext(AppContext);
 
     const [color, setColor] = useColor("hex", "#121212");
@@ -24,7 +28,17 @@ const Connected = () => {
         await writableCharacteristic.writeValueWithoutResponse(toBuffer(OFF));
     }
 
-    console.log(color)
+    const disconnect = useCallback(() => {
+        request.gatt.disconnect();
+    }, [request]);
+
+    const onDisconnect = useCallback(() => {
+        setConnected(false);
+    }, [request]);
+
+    useEffect(() => {
+        request.addEventListener('gattserverdisconnected', onDisconnect);
+    }, [request]);
 
     const onColorChange = async (rColor : any) => {
         const { rgb } = rColor;
@@ -38,13 +52,21 @@ const Connected = () => {
     return (
         <Card body>
             <div className="ble-vbox">
+                <Card.Subtitle style={{ marginTop: 15, marginBottom: 15 }}>
+                    Connected Device: <i>{ device.device.name }</i>
+                </Card.Subtitle>
                 <Button className="space-md" onClick={onSwitchOn} variant="primary" size="lg">
                     ON
                 </Button>
                 <Button  className="space-md" onClick={onSwitchOff} variant="danger" size="lg">
                     OFF
                 </Button>
-                <ColorPicker width={200} color={color} onChange={onColorChange} hideRGB hideHEX />
+                <div className="ble-hbox ble-middle">
+                    <ColorPicker width={250} color={color} onChange={onColorChange}  hideHEX />
+                </div>
+                <Button  className="space-md" onClick={disconnect} variant="danger" size="lg">
+                    Disconnect
+                </Button>
             </div>
         </Card>
     )

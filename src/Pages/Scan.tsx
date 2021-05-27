@@ -10,19 +10,27 @@ const Scan = () => {
         cuuid,
         loading,
         setLoading,
+        setDevice,
         setConnected,
+        setRequest,
         setServices, 
         setWritableCharacteristic 
     } = useContext(AppContext);
     const onScan = async () => {
         setLoading(true);
         try {
-            const request = await (navigator as any).bluetooth.requestDevice({ filters: [{services: [uuid]}] });
-            const device = await request.gatt.connect();
+            const requestDevice = await (navigator as any).bluetooth.requestDevice({ filters: [
+                { namePrefix: 'Triones' },
+            ],
+            optionalServices: [uuid],
+            });
+            const device = await requestDevice.gatt.connect();
             const BTServices = await device.getPrimaryServices();
             const characteristic = await BTServices[0].getCharacteristic(cuuid);
             setServices(BTServices);
             setWritableCharacteristic(characteristic);
+            setDevice(device);
+            setRequest(requestDevice);
             setConnected(true);
             setLoading(false);
         } catch (e) {

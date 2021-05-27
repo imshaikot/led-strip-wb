@@ -14,6 +14,10 @@ const defaultContext = {
   setConnected: null,
   loading: false,
   setLoading: null,
+  request: null,
+  setRequest: null,
+  device: null,
+  setDevice: null,
   services: null,
   setServices: null,
   writableCharacteristic: null,
@@ -25,6 +29,8 @@ function App() {
   const [loading, setLoading] = useState(null);
   const [connected, setConnected] = useState(null);
   const [services, setServices] = useState(null);
+  const [device, setDevice] = useState(null);
+  const [request, setRequest] = useState(null);
 
   return (
     <AppContext.Provider value={{
@@ -37,6 +43,10 @@ function App() {
       setWritableCharacteristic,
       services,
       setServices,
+      device,
+      setDevice,
+      request,
+      setRequest,
       }}>
       <Container className="ble-container">
         <div className="ble-vbox">
