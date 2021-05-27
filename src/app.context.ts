@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
 const context: any = {};
-const appContext = createContext(context);
+const AppContext = createContext(context);
 
-export default appContext;
+export default AppContext;

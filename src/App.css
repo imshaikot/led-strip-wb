@@ -9,7 +9,12 @@
 .ble-vbox {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 .ble-hbox {
   display: flex;
+}
+
+.space-md {
+  margin: 5px;
 }

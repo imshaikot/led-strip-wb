@@ -2,20 +2,31 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import { FaBluetoothB } from "react-icons/fa";
 import { Spinner, Card, Button } from 'react-bootstrap';
-import appContext from '../app.context';
+import AppContext from '../app.context';
 
 const Scan = () => {
-    const { services, setServices } = useContext(appContext);
-    const [ loading, setLoading ] = useState(false)
+    const { 
+        uuid,
+        cuuid,
+        loading,
+        setLoading,
+        setConnected,
+        setServices, 
+        setWritableCharacteristic 
+    } = useContext(AppContext);
     const onScan = async () => {
         setLoading(true);
         try {
-            const request = await (navigator as any).bluetooth.requestDevice({ filters: [{services: [services.uuid]}] });
+            const request = await (navigator as any).bluetooth.requestDevice({ filters: [{services: [uuid]}] });
             const device = await request.gatt.connect();
             const BTServices = await device.getPrimaryServices();
-            setLoading(false);
+            const characteristic = await BTServices[0].getCharacteristic(cuuid);
             setServices(BTServices);
-        } catch {
+            setWritableCharacteristic(characteristic);
+            setConnected(true);
+            setLoading(false);
+        } catch (e) {
+            console.log(e)
             setLoading(false);
         }
     }
