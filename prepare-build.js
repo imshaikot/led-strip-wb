@@ -27,13 +27,13 @@ exec('echo "abc"', {}, async (err, stout) => {
             // if (!lstatSync(each).isDirectory()) copyFileSync('./build/' +each, each);
             execSync(`cp -R ./build/${each} ${each}`)
         });
-        exec('git add . & git commit -m "prepared build and release"', {}, (err, commit_stdout) => {
+        exec('git add .', {}, (err, commit_stdout) => {
             if (err) {
                 console.log(err);
                 return;
             }
             console.log(commit_stdout);
-
+            execSync('git commit -m "prepared build and release"');
             exec('git checkout master"', {}, (err, checkout_stdout) => {
                 if (err) {
                     console.log(err);
