@@ -1,5 +1,5 @@
-const { readdirSync, lstatSync, rmdirSync, rmSync, copyFileSync } = require('fs');
-const { exec } = require('child_process');
+const { readdirSync, lstatSync, rmdirSync, unlinkSync, copyFileSync } = require('fs');
+const { exec, execSync } = require('child_process');
 
 exec('echo "abc"', {}, async (err, stout) => {
     console.log(stout);
@@ -12,21 +12,22 @@ exec('echo "abc"', {}, async (err, stout) => {
 
         const files = readdirSync('./');
         files.forEach(each => {
-            if (each !== 'build' && each.indexOf('.git') !== 0 && each !== 'node_modules') {
+            if (each !== 'build' && each !== 'prepare-build.js' && each.indexOf('.git') !== 0 && each !== 'node_modules') {
                 if (lstatSync(each).isDirectory()) {
                     console.log('Removing directory ['+ each + ']')
-                    // rmdirSync(each);
+                    execSync(`rm -rf ${each}`);
                 } else {
                     console.log('Removing file ['+each +']')
-                    // rmSync(each)
+                    unlinkSync(each)
                 }
             }
         });
         readdirSync('./build').forEach(each => {
             console.log(`Coping file [build/${each}] to [${each}]`)
-            // copyFileSync('./build/' +each, each);
+            // if (!lstatSync(each).isDirectory()) copyFileSync('./build/' +each, each);
+            execSync(`cp -R ./build/${each} ${each}`)
         });
-        exec('git add . & git commit -b "prepared build and release"', {}, (err, commit_stdout) => {
+        exec('git add . & git commit -m "prepared build and release"', {}, (err, commit_stdout) => {
             if (err) {
                 console.log(err);
                 return;
