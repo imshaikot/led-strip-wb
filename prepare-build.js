@@ -1,7 +1,7 @@
-const { readdirSync, lstatSync, rmdirSync, unlinkSync, copyFileSync } = require('fs');
+const { readdirSync, lstatSync, unlinkSync, readFileSync, writeFileSync } = require('fs');
 const { exec, execSync } = require('child_process');
 
-exec('echo "abc"', {}, async (err, stout) => {
+exec('yarn build', {}, async (err, stout) => {
     console.log(stout);
     exec('git checkout -B gh-pages', {}, (err, branch_stdout) => {
         if (err) {
@@ -27,14 +27,21 @@ exec('echo "abc"', {}, async (err, stout) => {
             // if (!lstatSync(each).isDirectory()) copyFileSync('./build/' +each, each);
             execSync(`cp -R ./build/${each} ${each}`)
         });
-        exec('git add . & git commit -m "prepared build and release"', {}, (err, commit_stdout) => {
+
+        const indexHtml = readFileSync('index.html', { encoding: 'utf8' })
+        .replace(/href="\//g, 'href="')
+        .replace(/src="\//g, 'src="');
+        writeFileSync('index.html', indexHtml);
+
+        exec('git add .', {}, (err, commit_stdout) => {
             if (err) {
                 console.log(err);
                 return;
             }
             console.log(commit_stdout);
-
-            exec('git checkout master"', {}, (err, checkout_stdout) => {
+            execSync('git commit -m "prepared build and release"');
+            execSync('git push origin gh-pages -f');
+            exec('git checkout master', {}, (err, checkout_stdout) => {
                 if (err) {
                     console.log(err);
                     return;
