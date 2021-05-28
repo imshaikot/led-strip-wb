@@ -1,7 +1,7 @@
-const { readdirSync, lstatSync, unlinkSync, readFileSync, writeFileSync } = require('fs');
+const { readdirSync, lstatSync, rmdirSync, unlinkSync, copyFileSync } = require('fs');
 const { exec, execSync } = require('child_process');
 
-exec('yarn build', {}, async (err, stout) => {
+exec('echo "abc"', {}, async (err, stout) => {
     console.log(stout);
     exec('git checkout -B gh-pages', {}, (err, branch_stdout) => {
         if (err) {
@@ -27,13 +27,6 @@ exec('yarn build', {}, async (err, stout) => {
             // if (!lstatSync(each).isDirectory()) copyFileSync('./build/' +each, each);
             execSync(`cp -R ./build/${each} ${each}`)
         });
-
-        const indexHtml = readFileSync('index.html', { encoding: 'utf8' })
-        .replace(/href="\//g, 'href="')
-        .replace(/src="\//g, 'src="');
-        console.log(indexHtml)
-        writeFileSync('index.html', indexHtml);
-
         exec('git add .', {}, (err, commit_stdout) => {
             if (err) {
                 console.log(err);
@@ -41,7 +34,6 @@ exec('yarn build', {}, async (err, stout) => {
             }
             console.log(commit_stdout);
             execSync('git commit -m "prepared build and release"');
-            execSync('git push origin gh-pages');
             exec('git checkout master', {}, (err, checkout_stdout) => {
                 if (err) {
                     console.log(err);
@@ -52,5 +44,3 @@ exec('yarn build', {}, async (err, stout) => {
         });
     });
 });
-
-
