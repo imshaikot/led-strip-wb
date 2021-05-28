@@ -34,7 +34,7 @@ exec('echo "abc"', {}, async (err, stout) => {
             }
             console.log(commit_stdout);
             execSync('git commit -m "prepared build and release"');
-            exec('git checkout master"', {}, (err, checkout_stdout) => {
+            exec('git checkout master', {}, (err, checkout_stdout) => {
                 if (err) {
                     console.log(err);
                     return;
