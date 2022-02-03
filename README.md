@@ -1,6 +1,6 @@
 ## Connect and control Bluetooth based LED strips using Web Bluetooth API
 
-Example: https://imshaikot.github.io/led-strip-wb/
+Example: https://imshaikot.github.io/led-strip-web-bluetooth/
 
 ![screencast](https://github.com/imshaikot/led-strip-wb/blob/master/public/Image.gif)
 
